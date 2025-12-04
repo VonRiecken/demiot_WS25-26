@@ -1,0 +1,68 @@
+[
+    {
+        "id": "bb36bb31585f4833",
+        "type": "modbus-flex-getter",
+        "z": "109aa5bb5e7888e8",
+        "name": "Read Power Analyser Data",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "server": "14820ce5b59b0b97",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "enableDeformedMessages": false,
+        "startDelayTime": "",
+        "x": 540,
+        "y": 160,
+        "wires": [
+            [
+                "ec7516c12b31a9c0",
+                "9d754b0fe882049c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "14820ce5b59b0b97",
+        "type": "modbus-client",
+        "name": "UMG801_RIZ",
+        "clienttype": "tcp",
+        "bufferCommands": false,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "141.79.60.89",
+        "tcpPort": 502,
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": 9600,
+        "serialDatabits": 8,
+        "serialStopbits": 1,
+        "serialParity": "none",
+        "serialConnectionDelay": 100,
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": "50",
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": false,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "1cbc7b4d02bf0ec4",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-modbus": "5.45.2"
+        }
+    }
+]

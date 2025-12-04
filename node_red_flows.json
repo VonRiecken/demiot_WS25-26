@@ -1,0 +1,252 @@
+[
+  {
+    "id": "da58d5dd71e20334",
+    "type": "inject",
+    "z": "95aab7fa5f8f6116",
+    "name": "Trigger Every 1s",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "1",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 870,
+    "y": 880,
+    "wires": [
+      [
+        "ec7f67b7ba9d4246"
+      ]
+    ]
+  },
+  {
+    "id": "ec7f67b7ba9d4246",
+    "type": "function",
+    "z": "95aab7fa5f8f6116",
+    "name": "Prepare Modbus Request",
+    "func": "msg.payload = {\n    fc: 3,\n    unitid: 1,\n    address: 19000,\n    quantity: 20\n};\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1100,
+    "y": 880,
+    "wires": [
+      [
+        "bb36bb31585f4833"
+      ]
+    ]
+  },
+  {
+    "id": "ec7516c12b31a9c0",
+    "type": "function",
+    "z": "95aab7fa5f8f6116",
+    "name": "Convert to Float BE",
+    "func": "var buffer = new ArrayBuffer(4);\nvar view = new DataView(buffer);\nvar integers = msg.payload;\nvar results = [];\n\nfor (var i = 0; i < integers.length; i += 2) {\n    if (i + 1 < integers.length) {\n        view.setUint16(0, integers[i], false);\n        view.setUint16(2, integers[i + 1], false);\n        var value = view.getFloat32(0, false);\n        results.push(Math.round(value * 1000) / 1000);  // Round to 3 decimal places\n    }\n}\n\nmsg.payload = results;\nmsg.timestamp = new Date().toISOString();\nreturn msg;\n",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1370,
+    "y": 1020,
+    "wires": [
+      [
+        "c81f3feac6b95615",
+        "2c04c79e809dfa6b"
+      ]
+    ]
+  },
+  {
+    "id": "c81f3feac6b95615",
+    "type": "function",
+    "z": "95aab7fa5f8f6116",
+    "name": "Array to JSON Object",
+    "func": "const columnMap = [\n    \"V_L1_N\", \"V_L2_N\", \"V_L3_N\", \n    \"V_L1_L2\", \"V_L2_L3\", \"V_L3_L1\", \n    \"A_L1\", \"A_L2\", \"A_L3\", \"A_N\"\n];\n\nconst arr = msg.payload;\nlet data = {\n    device_id: \"RIZ_UMG801\",\n    timestamp: msg.timestamp,\n    measurements: {}\n};\n\nfor (let i = 0; i < columnMap.length && i < arr.length; i++) {\n    data.measurements[columnMap[i]] = arr[i] !== undefined ? arr[i] : null;\n}\n\nmsg.payload = data;\nmsg.topic = \"sensors/RIZ_PowerAnalyser/data\";\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 1480,
+    "y": 900,
+    "wires": [
+      [
+        "6e924acdb7abe8c0",
+        "6c141d02d7f85f13"
+      ]
+    ]
+  },
+  {
+    "id": "6e924acdb7abe8c0",
+    "type": "mqtt out",
+    "z": "95aab7fa5f8f6116",
+    "name": "Publish to MQTT",
+    "topic": "sensors/RIZ_PowerAnalyser/data",
+    "qos": "1",
+    "retain": "false",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "7c262471c3e3a51e",
+    "x": 1830,
+    "y": 840,
+    "wires": []
+  },
+  {
+    "id": "6c141d02d7f85f13",
+    "type": "debug",
+    "z": "95aab7fa5f8f6116",
+    "name": "Debug Published Data",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 1820,
+    "y": 1000,
+    "wires": []
+  },
+  {
+    "id": "bb36bb31585f4833",
+    "type": "modbus-flex-getter",
+    "z": "95aab7fa5f8f6116",
+    "name": "Read Power Analyser Data",
+    "showStatusActivities": true,
+    "showErrors": true,
+    "showWarnings": true,
+    "logIOActivities": false,
+    "server": "14820ce5b59b0b97",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": false,
+    "delayOnStart": false,
+    "enableDeformedMessages": false,
+    "startDelayTime": "",
+    "x": 1200,
+    "y": 800,
+    "wires": [
+      [
+        "ec7516c12b31a9c0",
+        "9d754b0fe882049c"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "9d754b0fe882049c",
+    "type": "debug",
+    "z": "95aab7fa5f8f6116",
+    "name": "Modbus Flex Getter Debug",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1520,
+    "y": 800,
+    "wires": []
+  },
+  {
+    "id": "2c04c79e809dfa6b",
+    "type": "debug",
+    "z": "95aab7fa5f8f6116",
+    "name": "debug 1",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1560,
+    "y": 1120,
+    "wires": []
+  },
+  {
+    "id": "7c262471c3e3a51e",
+    "type": "mqtt-broker",
+    "name": "Local Mosquitto",
+    "broker": "localhost",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "nodered/status",
+    "birthQos": "1",
+    "birthRetain": "true",
+    "birthPayload": "{\"status\":\"online\",\"timestamp\":\"$now\"}",
+    "birthMsg": {},
+    "closeTopic": "nodered/status",
+    "closeQos": "1",
+    "closeRetain": "true",
+    "closePayload": "{\"status\":\"offline\",\"timestamp\":\"$now\"}",
+    "closeMsg": {},
+    "willTopic": "nodered/status",
+    "willQos": "1",
+    "willRetain": "true",
+    "willPayload": "{\"status\":\"unexpected_disconnect\",\"timestamp\":\"$now\"}",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": ""
+  },
+  {
+    "id": "14820ce5b59b0b97",
+    "type": "modbus-client",
+    "name": "UMG801_RIZ",
+    "clienttype": "tcp",
+    "bufferCommands": true,
+    "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "failureLogEnabled": true,
+    "tcpHost": "141.79.60.89",
+    "tcpPort": 502,
+    "tcpType": "DEFAULT",
+    "serialPort": "/dev/ttyUSB",
+    "serialType": "RTU-BUFFERD",
+    "serialBaudrate": 9600,
+    "serialDatabits": 8,
+    "serialStopbits": 1,
+    "serialParity": "none",
+    "serialConnectionDelay": 100,
+    "serialAsciiResponseStartDelimiter": "0x3A",
+    "unit_id": 1,
+    "commandDelay": 1,
+    "clientTimeout": 1000,
+    "reconnectOnTimeout": true,
+    "reconnectTimeout": 2000,
+    "parallelUnitIdsAllowed": true,
+    "showErrors": false,
+    "showWarnings": true,
+    "showLogs": true
+  },
+  {
+    "id": "a5dc44c521250a9d",
+    "type": "global-config",
+    "env": [],
+    "modules": {
+      "node-red-contrib-modbus": "5.44.1"
+    }
+  }
+]
