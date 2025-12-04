@@ -1,0 +1,54 @@
+📍 Course: DEMIoT — Data Engineering & Management with Internet of Things
+👥 Team: Group 4
+📆 Semester: Winter Semester 25/26
+
+📌 Project Overview
+
+This project is part of the Data Engineering & Management with IoT (DEMIoT) course.
+Our team aims to design and implement an IoT-driven data pipeline that collects, processes, stores, and visualises sensor data.
+
+The project covers:
+- IoT data ingestion
+- Programming of the ESP32
+- Data storage
+- Analytics & visualisation
+- Project documentation & collaboration workflow
+
+
+🔧 Tech Stack
+Languages:
+- Python (for project package)
+- Arduino (C++)
+
+Tools & Services:
+- ESP32 board
+  - LDR sensor
+  - resistor
+  - WiFi sender
+- MQTT Broker
+  - mosquitto server is being used
+- Arduino
+  - Boards:
+    - Arduino AVR Boards by Arduino
+    - ESP32 Dev Module
+  - Libraries
+    - Adafruit BMP280
+    - Adafruit BusIO
+    - Adafruit Unified Sensor
+    - Arduinojson by Benoit Blanchon
+    - PubSubClient
+- Database (InfluxDB)
+- NodeRed
+- Visualisation framework (Grafana, Plotly, Streamlit, etc.)
+- GitHub (version control + collaboration)
+
+
+General process:
+1 - Download and setup required tech stack and tools
+2 - Program ESP32 through arduino to take LDR readings
+3 - Collect light measurement data with Luxmeter and also ESP32
+4 - Run calibration to convert LDR sensor to LUX
+5 - Program ESP32 to collect LDR readings, convert to LUX, and upload (publish to MQTT)
+6 - Use NodeRed to direct MQTT workflow
+7 - MQTT topics will be uploaded to InfluxDB
+8 - Influx will need to be processed and put into a visualisation dashboard
